@@ -1,7 +1,16 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http),
+mongoose = require('mongoose'),
 users = {}; // list of our users connected to the chat, users is now an object because we want to store socket reference to each nickname as well
+
+mongoose.connect('mongodb://localhost/chat', function(err) {
+  if (err) {
+    console.log(err);
+  } else {
+    console.log('Connected to mongodb');
+  }
+}); //dont forget to open new terminal for mongod
 
 app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
