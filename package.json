@@ -1,0 +1,22 @@
+{
+  "name": "chat_express_mongo",
+  "version": "1.0.0",
+  "description": "Basic chat application with Node.js, Socket.io and Mongo.db",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "chat",
+    "Mondo.db",
+    "Express",
+    "Node.js",
+    "Socket.io"
+  ],
+  "author": "heron2014",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "express": "~4.13.1",
+    "socket.io": "~1.3.6"
+  }
+}
