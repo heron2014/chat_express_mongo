@@ -25,7 +25,7 @@ io.on('connection', function(socket){
   }
 
   socket.on('send message', function(data) { // receive message from client
-    io.emit('new message', data); //send it back to users
+    io.emit('new message', {msg: data, nick: socket.nickname}); //sends the message back to client plus the nickname of the owner of that message
   });
 
   //disconnect users when they are not in chat - dont show usernames nicknames when they are not connected to chat

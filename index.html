@@ -89,7 +89,7 @@
     });
 
     socket.on('new message', function(data) { //receive the message from server and append it to the chat div
-      $chat.append(data + '<br/>');
+      $chat.append('<b>' + data.nick + ': </b>' + data.msg  + '<br/>');
     })
 
   });
