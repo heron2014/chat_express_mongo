@@ -6,14 +6,38 @@
     #chat {
       height: 500px;
     }
+
+    #chatWrap {
+      float: :left;
+      border: 1px solid #000;
+    }
+
+    /*contentWrap is display: none becaue first we want users to pick up their username and then be able to submit message*/
+    #contentWrap {
+      display: none;
+    }
   </style>
 </head>
 <body>
-<div id="chat"></div>
-<form id="send-message">
-  <input id="message"></input>
-  <input type="submit"></input>
-</form>
+<div id="nickWrap">
+  <p>Enter your username: </p>
+  <p id="nickError"></p>
+  <form id="setNick">
+    <input id="nickname"></input>
+    <input type="submit"></input>
+  </form>
+</div>
+
+<div id="contentWrap">
+  <div id="chatWrap">
+    <div id="chat"></div>
+    <form id="send-message">
+      <input id="message"></input>
+      <input type="submit"></input>
+    </form>
+  </div>
+  <div id="users"></div>
+</div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
@@ -21,12 +45,29 @@
   $(function() {
 
     var socket = io.connect();
+    var $nickWrap = $('#nickWrap');
+    var $nickForm = $('#setNick');
+    var $nickError = $('#nickError');
+    var $nickBox = $('#nickname');
+    var $contentWrap = $('#contentWrap');
     var $messageForm = $('#send-message');
     var $messageBox = $('#message');
     var $chat = $('#chat');
 
-    //user submit the message which is going to the server
+    $nickForm.submit(function(e) {
+      e.preventDefault();
+      socket.emit('new user', $nickBox.val(), function(data) { //callback is checking if the username is valid, parameter 'data' is either true or false
+        if(data) { // if we get data = true from the server, meaning nickname doesnt exist in our array
+          $nickWrap.hide();
+          $contentWrap.show();
+        } else { //if we send false back from the server we need to show error message that this nickname is already taken
+          $nickError.html('That username is already taken. Try again');
+        }
+      });
+      $nickBox.val(''); //clear the nickname box
+    });
 
+    //user submit the message which is going to the server
     $messageForm.submit(function(e) {
       e.preventDefault();
       socket.emit('send message', $messageBox.val()); //submits to server
