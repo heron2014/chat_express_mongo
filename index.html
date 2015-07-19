@@ -17,6 +17,13 @@
     #contentWrap {
       display: none;
     }
+    .error {
+      color:red;
+    }
+    .whisper {
+      color: grey;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
@@ -84,13 +91,19 @@
     //user submit the message which is going to the server
     $messageForm.submit(function(e) {
       e.preventDefault();
-      socket.emit('send message', $messageBox.val()); //submits to server
+      socket.emit('send message', $messageBox.val(), function(data) {
+        $chat.append('<span class="error"><b>' + data + '</span><br/>');
+      }); //submits to server
       $messageBox.val(''); //clear my message 
     });
 
     socket.on('new message', function(data) { //receive the message from server and append it to the chat div
-      $chat.append('<b>' + data.nick + ': </b>' + data.msg  + '<br/>');
-    })
+      $chat.append('<span class="msg"><b>' + data.nick + ': </b>' + data.msg  + '</span><br/>');
+    });
+
+    socket.on('whisper', function(data) {
+      $chat.append('<span class="whisper"><b>' + data.nick + ': </b>' + data.msg  + '</span><br/>');
+    });
 
   });
 </script>
