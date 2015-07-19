@@ -5,10 +5,11 @@
   <style>
     #chat {
       height: 500px;
+
     }
 
     #chatWrap {
-      float: :left;
+      float: left;
       border: 1px solid #000;
     }
 
@@ -52,6 +53,7 @@
     var $contentWrap = $('#contentWrap');
     var $messageForm = $('#send-message');
     var $messageBox = $('#message');
+    var $users = $('#users');
     var $chat = $('#chat');
 
     $nickForm.submit(function(e) {
@@ -65,6 +67,18 @@
         }
       });
       $nickBox.val(''); //clear the nickname box
+    });
+
+
+    //display usernames
+    socket.on('usernames', function(data) {
+      //we are looping through our nicknames array to display each name 
+      var username  = '';
+      for (var i = 0; i < data.length; i++) {
+        username += data[i] + '<br/>';
+      }
+      $users.html(username);
+
     });
 
     //user submit the message which is going to the server
