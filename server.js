@@ -4,7 +4,7 @@ var io = require('socket.io')(http),
 mongoose = require('mongoose'),
 users = {}; // list of our users connected to the chat, users is now an object because we want to store socket reference to each nickname as well
 
-mongoose.connect('mongodb://localhost/chat', function(err) {
+mongoose.connect('mongodb://localhost/chat', function(err) { //chat is the name of the database 
   if (err) {
     console.log(err);
   } else {
@@ -12,11 +12,28 @@ mongoose.connect('mongodb://localhost/chat', function(err) {
   }
 }); //dont forget to open new terminal for mongod
 
+//creating schema for mongodb, data types for our fields
+var chatSchema = mongoose.Schema({
+  nick: String,
+  msg: String,
+  created: {type: Date, default: Date.now}
+});
+
+//create collection Message
+var Chat = mongoose.model('Message', chatSchema);
+
 app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
 });
 
 io.on('connection', function(socket){
+  //retrieve your messages when you just logged in
+  Chat.find({}, function(err, docs){
+    if(err) throw err;
+    console.log('Sending old messages');
+    socket.emit('load old msgs', docs);
+  })
+
 
   socket.on('new user', function(data, callback) {
     if(data in users) { //we are checking if the nickname already exist in our array
@@ -62,7 +79,13 @@ io.on('connection', function(socket){
       }
 
     } else {
-      io.emit('new message', {msg: msg, nick: socket.nickname}); //sends the message back to client plus the nickname of the owner of that message
+      var newMsg = new Chat({msg: msg, nick: socket.nickname}); //we dont need to specify date because we set default 
+      newMsg.save(function(err) {
+        if(err) throw err;
+        io.emit('new message', {msg: msg, nick: socket.nickname}); //sends the message back to client plus the nickname of the owner of that message 
+        console.log(msg);
+      });
+      
     }    
   });
 

@@ -97,9 +97,19 @@
       $messageBox.val(''); //clear my message 
     });
 
-    socket.on('new message', function(data) { //receive the message from server and append it to the chat div
-      $chat.append('<span class="msg"><b>' + data.nick + ': </b>' + data.msg  + '</span><br/>');
+    socket.on('load old msgs', function(docs) {
+      for (var i = 0; i < docs.length; i++) {
+        displayMsg(docs[i]);
+      }
     });
+      
+    socket.on('new message', function(data) { //receive the message from server and append it to the chat div
+      displayMsg(data);
+    });
+
+    function displayMsg(data) {
+      $chat.append('<span class="msg"><b>' + data.nick + ': </b>' + data.msg  + '</span><br/>');
+    }
 
     socket.on('whisper', function(data) {
       $chat.append('<span class="whisper"><b>' + data.nick + ': </b>' + data.msg  + '</span><br/>');
