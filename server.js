@@ -28,11 +28,12 @@ app.get('/', function(req, res) {
 
 io.on('connection', function(socket){
   //retrieve your messages when you just logged in
-  Chat.find({}, function(err, docs){
+  var query = Chat.find({});
+  query.limit(8).exec(function(err, docs){ //retreives 8 old messages
     if(err) throw err;
     console.log('Sending old messages');
     socket.emit('load old msgs', docs);
-  })
+  });
 
 
   socket.on('new user', function(data, callback) {
